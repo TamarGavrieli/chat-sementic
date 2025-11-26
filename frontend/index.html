@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <title>צ'אט סמנטי לפסקי דין</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-container">
+    <header class="app-header">
+      <h1>צ'אט סמנטי לפסקי דין</h1>
+      <p> שאלות על פסקי הדין.כ</p>
+    </header>
+
+    <main class="chat-container">
+      <div id="chat-messages" class="chat-messages">
+        <!-- ההודעות יופיעו כאן -->
+      </div>
+      <div id="typing-indicator" class="typing-indicator hidden">
+        העוזר חושב...
+      </div>
+    </main>
+
+    <footer class="chat-input-container">
+      <form id="chat-form" class="chat-form">
+        <textarea
+          id="user-input"
+          class="chat-textarea"
+          rows="2"
+          placeholder="כתוב כאן את השאלה שלך על פסקי הדין..."
+        ></textarea>
+        <button id="send-button" type="submit" class="chat-button">
+          שלח
+        </button>
+      </form>
+    </footer>
+  </div>
+
+  <script src="app.js" type="module"></script>
+</body>
+</html>
