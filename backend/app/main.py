@@ -11,13 +11,7 @@ from .services import SemanticSearchService
 from .llm.rag import build_prompt
 from .llm.ollama_model import OllamaChatModel
 
-
-# ======================
-# App & Model Init
-# ======================
-
 app = FastAPI(title="Semantic Verdict Chat")
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -26,7 +20,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# LLM (מודל חזק, מקומי)
+# LLM 
 chat_model = OllamaChatModel(model="llama3.1:8b-instruct-q4_K_M")
 
 # Vector DB
@@ -43,7 +37,6 @@ search_service = SemanticSearchService(index_dir=INDEX_DIR)
 def warmup_llm():
     print("[INFO] Warming up LLM...")
     try:
-        # שולחים prompt קצר מאוד ולוקחים טוקן אחד
         for _ in chat_model.stream("שלום"):
             break
         print("[INFO] LLM warm-up completed")
@@ -67,17 +60,12 @@ def stream_answer(question: str):
             yield ch
             time.sleep(0.01)
         return
-
-    # 🧠 Build prompt (RAG אחד, אחיד)
     prompt = build_prompt(question, results)
     print(f"[TIME] Prompt built: {time.time() - start:.2f}s")
     print(f"[DEBUG] Calling LLM now...")
-    # 🧪 Debug (אפשר למחוק בהמשך)
     print("==== PROMPT SENT TO LLM ====")
     print(prompt)
     print("================================")
-
-    # 🤖 Streaming מה-LLM
     start_time = time.time()
     for token in chat_model.stream(prompt):
         yield token

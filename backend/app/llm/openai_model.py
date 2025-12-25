@@ -3,9 +3,9 @@ from typing import Generator
 from .base import BaseChatModel  # ייבוא המחלקה הבסיסית
 
 
-class OpenAIChatModel(BaseChatModel):  # ← חשוב! צריך לרשת מהמחלקה הבסיסית
+class OpenAIChatModel(BaseChatModel): 
     def __init__(self, model: str):
-        self.client = OpenAI()  # או עם api_key אם צריך
+        self.client = OpenAI()  
         self.model_name = model
     
     def stream(self, prompt: str) -> Generator[str, None, None]:

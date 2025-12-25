@@ -1,7 +1,7 @@
 from typing import List, Dict
 from pathlib import Path
 
-MAX_CONTEXT_CHARS = 1000  # 🔥 זה המספר הקריטי
+MAX_CONTEXT_CHARS = 1000  
 
 def build_prompt(question: str, chunks: List[Dict]) -> str:
     context_blocks = []
@@ -10,13 +10,9 @@ def build_prompt(question: str, chunks: List[Dict]) -> str:
     for i, chunk in enumerate(chunks, start=1):
         source_name = Path(chunk["source"]).name
         content = chunk.get("content", "").strip()
-
         block = f"[Source {i}: {source_name}]\n{content}"
-
-        # 🔥 עצירה אם חורגים מהתקציב
         if current_length + len(block) > MAX_CONTEXT_CHARS:
             break
-
         context_blocks.append(block)
         current_length += len(block)
 
