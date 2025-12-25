@@ -1,7 +1,8 @@
 from typing import List, Dict
 from pathlib import Path
+import os
 
-MAX_CONTEXT_CHARS = 1000  
+MAX_CONTEXT_CHARS = int(os.getenv("MAX_CONTEXT_CHARS", "1000"))
 
 def build_prompt(question: str, chunks: List[Dict]) -> str:
     context_blocks = []
@@ -41,8 +42,6 @@ Structure your answer as:
 
 IMPORTANT: Write your entire answer in fluent, natural Hebrew. Be clear and professional.
 Limit the answer to at most 120 words.
-
-
 """
     print(f"[DEBUG] Prompt length: {len(prompt)} chars")
     print(f"[DEBUG] Number of chunks used: {len(context_blocks)}")

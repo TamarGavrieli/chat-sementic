@@ -23,10 +23,9 @@ class OllamaChatModel(BaseChatModel):
                         "temperature": 0.2,
                         "top_p": 0.9
                     }
-                
                 },
                 stream=True,
-                timeout=(10, None)
+                timeout=600  #10 דק
             )
             
             for line in response.iter_lines(decode_unicode=True):
@@ -37,12 +36,12 @@ class OllamaChatModel(BaseChatModel):
 
                 if data.get("done"):
                     break  
+                
                 chunk = data.get("response")
                 if chunk:
                     yield chunk
 
+        except requests.exceptions.Timeout:
+            yield "הזמן הקצוב לתשובה עבר. נסה שאלה קצרה יותר."
         except Exception as e:
             yield f"שגיאה בחיבור ל-Ollama: {str(e)}"
-            
-            
-            

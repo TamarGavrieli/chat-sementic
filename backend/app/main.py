@@ -3,6 +3,7 @@ from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pathlib import Path
 import time
+import os
 
 from .schemas import ChatRequest
 from .services import SemanticSearchService
@@ -28,6 +29,9 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 INDEX_DIR = PROJECT_ROOT / "data" / "index"
 search_service = SemanticSearchService(index_dir=INDEX_DIR)
 
+# Debug mode
+DEBUG = os.getenv("DEBUG", "false").lower() == "true"
+
 
 # ======================
 # Warm-up (קריטי למהירות)
@@ -37,9 +41,12 @@ search_service = SemanticSearchService(index_dir=INDEX_DIR)
 def warmup_llm():
     print("[INFO] Warming up LLM...")
     try:
-        for _ in chat_model.stream("שלום"):
-            break
-        print("[INFO] LLM warm-up completed")
+        tokens = []
+        for token in chat_model.stream("שלום, מה שלומך?"):
+            tokens.append(token)
+            if len(tokens) >= 10:  # 10 tokens מספיק
+                break
+        print(f"[INFO] LLM warm-up completed ({len(tokens)} tokens)")
     except Exception as e:
         print("[WARN] LLM warm-up failed:", e)
 
@@ -49,28 +56,39 @@ def warmup_llm():
 # ======================
 
 def stream_answer(question: str):
+    total_start = time.time()
+    
     # 🔍 Retrieval (RAG)
-    start = time.time()
-    print(f"[TIME] Started at {start}")
+    print(f"[TIME] Starting search...")
     results = search_service.search(question, k=2)
-    print(f"[TIME] Search done: {time.time() - start:.2f}s")
+    print(f"[TIME] Search done: {time.time() - total_start:.2f}s")
+    
     if not results:
         msg = "לא נמצאו קטעים רלוונטיים במסמכים עבור השאלה הזו."
         for ch in msg:
             yield ch
             time.sleep(0.01)
         return
+    
+    # Build prompt
     prompt = build_prompt(question, results)
-    print(f"[TIME] Prompt built: {time.time() - start:.2f}s")
-    print(f"[DEBUG] Calling LLM now...")
-    print("==== PROMPT SENT TO LLM ====")
-    print(prompt)
-    print("================================")
-    start_time = time.time()
+    print(f"[TIME] Prompt built: {time.time() - total_start:.2f}s")
+    
+    # Debug: print prompt preview
+    if DEBUG:
+        print("==== PROMPT SENT TO LLM ====")
+        print(prompt)
+        print("================================")
+    else:
+        print(f"[DEBUG] Prompt preview: {prompt[:200]}...")
+    
+    # 🤖 LLM Generation
+    llm_start = time.time()
     for token in chat_model.stream(prompt):
         yield token
-    print(f"[INFO] LLM response time: {time.time() - start_time:.2f}s")
-    print(f"[TIME] Total: {time.time() - start:.2f}s")
+    
+    print(f"[TIME] LLM response: {time.time() - llm_start:.2f}s")
+    print(f"[TIME] Total: {time.time() - total_start:.2f}s")
 
 
 # ======================
