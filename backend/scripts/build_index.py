@@ -1,13 +1,14 @@
 from pathlib import Path
 import sys
+
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+BACKEND_DIR = PROJECT_ROOT / "backend"
+sys.path.insert(0, str(BACKEND_DIR))
+
 from app.ingestion.loaders import load_all_documents
 from app.ingestion.chunking import chunk_documents
 from app.llm.base import LocalEmbeddingModel
 from app.vectordb.vectordb import SemanticVectorDB
-
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
-BACKEND_DIR = PROJECT_ROOT / "backend"
-sys.path.append(str(BACKEND_DIR))
 
 
 def main():
@@ -20,7 +21,7 @@ def main():
         print("[!] No documents found in raw_dir. Aborting.")
         return
     print(f"[INFO] Loaded {len(docs)} documents")
-    chunks = chunk_documents(docs, max_chars=800, overlap=200)
+    chunks = chunk_documents(docs, max_chars=650, overlap=100)
     if not chunks:
         print("[!] No chunks created. Aborting.")
         return

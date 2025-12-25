@@ -44,7 +44,7 @@ function setupChat() {
       return;
     }
 
-    // הודעת המשתמש
+ 
     const userMsg = document.createElement("div");
     userMsg.className = "message user";
     userMsg.textContent = trimmed;
@@ -54,7 +54,7 @@ function setupChat() {
     textareaEl.value = "";
     setUIBusy(true);
 
-    // הודעת העוזר שנמלא ב-Streaming
+    
     const assistantMsg = document.createElement("div");
     assistantMsg.className = "message assistant";
     assistantMsg.textContent = "";
