@@ -19,15 +19,15 @@ python -m venv .venv
 .venv\Scripts\activate 
 3. Install dependencies: 
 pip install -r requirements.txt 
-4. Download the documents: 
-python backend/scripts/download_documents.py 
-5. Build the semantic database: 
-python backend/scripts/build_index.py 
+4. Download the documents: nevigate to cd backend and run:
+python scripts/download_documents.py 
+5. Build the semantic database: nevigate to cd backend and run:
+python scripts/build_index.py 
 6. Run the backend server: 
 uvicorn backend.app.main:app --reload 
 Access: http://127.0.0.1:8000 
-7. Run the frontend: 
-cd frontend 
+7. Run the frontend: nevigate to cd frontend and run:
 python -m http.server 5500 
-Access: http://localhost:5500 
+Access: http://localhost:5500
+open localhost: 5500
 This system runs fully locally and all responses reference the original source documents.
